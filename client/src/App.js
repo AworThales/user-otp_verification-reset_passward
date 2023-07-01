@@ -1,11 +1,42 @@
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Username from './components/Username';
+import Register from './components/Register';
+import Password from './components/Password';
+import Profile from './components/Profile';
+import Reset from './components/Reset';
+import PageNotFound from './components/PageNotFound';
+
 
 function App() {
-  
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <Username></Username>
+    },
+    {
+      path: '/register',
+      element: <Register></Register>
+    },
+    {
+      path: '/password',
+      element: <Password></Password>
+    },
+    {
+      path: '/profile',
+      element: <Profile></Profile>
+    },
+    {
+      path: '/reset',
+      element: <Reset></Reset>
+    },
+    {
+      path: '*',
+      element: <PageNotFound></PageNotFound>
+    }
+  ])
   return (
     <div>
-      <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
+      <RouterProvider router={router}></RouterProvider>
     </div>
   );
 }
