@@ -13,7 +13,7 @@ export async function passwordValidated(values){
     return errors;
 }
 
-// validating rest password
+// validating reset password
 export async function resetPasswordValidate(values){
     const errors = passwordVerify({}, values);
 
@@ -23,6 +23,16 @@ export async function resetPasswordValidate(values){
 
     return errors;
 }
+
+// validating register form
+export async function registerValidate(values){
+    const errors = usernameVerify({}, values);
+    emailVerify(errors, values);
+    passwordVerify(errors, values);
+
+    return errors;
+}
+
 
 //* ************************************************** */
 /** validating password */
@@ -55,5 +65,19 @@ function usernameVerify(error = {}, values) {
     }
 
     // return  error object, if we have errors only when we have values inside the error object
+    return error;
+}
+
+// validating email
+function emailVerify(error = {}, values){
+    const character = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+    if(!values.email){
+        error.email = Toast.error("Email Required...!")
+    }else if(values.email.includes(" ")){
+        error.email  = Toast.error("Wrong Emmail...!")
+    }else if(!character.test(values.email))(
+        error.email = Toast.error("Invalid Email Address...!")
+    )
+
     return error;
 }

@@ -4,6 +4,7 @@ import avatar from '../images/profile.png';
 import { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
 import { passwordValidated } from '../helper/validate'
+import { registerValidate } from '../helper/validate'
 import { convertImageToBase64 } from '../helper/converter'
 // import { useAuthStore } from '../store/store'
 
@@ -22,7 +23,7 @@ export default function Register() {
       email: '',
       password : ''
     },
-    validate : passwordValidated,
+    validate : registerValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit : async values => {
