@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import avatar from '../images/profile.png';
 import { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
 import { passwordValidated } from '../helper/validate'
+import { convertImageToBase64 } from '../helper/converter'
 // import { useAuthStore } from '../store/store'
 
 import styles from '../styles/Username.module.css';
 
 export default function Register() {
+
+  const [file, setFile] = useState(); 
 
   // const navigate = useNavigate();
   // const setUsername = useAuthStore(state => state.setUsername);
@@ -23,9 +26,15 @@ export default function Register() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit : async values => {
-      console.log(values)
+      values = await Object.assign(values, {profle: file || ''})
     }
   })
+
+  // formik does not support file upload so we create handle
+  const onUpload = async e => {
+    const base64 = await convertImageToBase64(e.target.files[0]);
+    setFile(base64);
+  }
 
   return (
     <div className="container py-1 mx-auto" >
@@ -45,9 +54,9 @@ export default function Register() {
           <form className='py-1' onSubmit={formik.handleSubmit}>
               <div className='profile flex justify-center py-4'>
                   <label htmlFor='profile'>
-                    <img src={avatar} className={styles.profile_img} alt="avatar" />
+                    <img src={file || avatar} className={styles.profile_img} alt="avatar" />
                   </label>
-                  <input type='file' id='profile' name='profile' />
+                  <input type='file' id='profile' name='profile' onChange={onUpload} />
               </div>
 
               <div className="textbox flex flex-col items-center gap-6">
