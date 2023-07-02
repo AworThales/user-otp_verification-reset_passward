@@ -3,7 +3,7 @@ export function convertImageToBase64(file){
     // is goint to return a promose
     return new Promise((resolve, reject) =>{
         // creating instance of file reader and asign it to variable
-        const fileReader = new fileReader();
+        const fileReader = new FileReader();
         fileReader.readAsDataURL(file);
 
         // when the file is load call this function
