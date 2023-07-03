@@ -123,7 +123,7 @@ export async function login(req,res){
                                         username: user.username,
                                         }, ENV.JWT_SECRET, { expiresIn: "24h"});
                         return res.status(200).send({
-                            error: "Succesfully Login...!",
+                            msg: "Succesfully Login...!",
                             username: user.username,
                             token
                         })
@@ -149,15 +149,18 @@ export async function getUser(req,res){
 
     try{
 
-        if(!username) return res.status(501).send({ error: "Invalid Username"})
+        if(!username) return res.status(501).send({ error: "Invalid Username"});
 
-        UserModel.findOne({ username }), function (err, user){
-            if(err) return res.status(500).send({ err })
-            if(!user) return res.status(500).send ({error: "Can't find User"})
+        UserModel.findOne({ username }, function (err, user){
+            if(err) return res.status(500).send({ err });
+            if(!user) return res.status(500).send ({error: "Can't find User"});
 
+            // taking off passowrd from the data we are sending
+            // mongoose return unecessary data with object so convert to JSON
+            const { password, ...others} = Object.assign({}, user.toJSON());
             // if user is found then send the user
-            return res.status(201).send(user)
-        }
+            return res.status(201).send(others);
+        });
 
     } catch(error){
         return res.status(404).send({error: "User not found"})
@@ -176,7 +179,29 @@ export async function getUser(req,res){
  */
 
 export async function updateUser(req,res){
-    res.json("This is updateUser route");
+    try{
+
+        // getting the user id from query
+        // const id = req.query.id;
+        const { userId } = req.user;
+
+        if(userId){
+            //if id is valid recieve all the data from body
+            const body = req.body;
+
+            // update data
+            UserModel.updateOne({ _id: userId }, body, function(err, data){
+                if(err) throw err;
+
+                return res.status(201).send({ msg: "Record Pudated Successfully...!"})
+            })
+        }else{
+            return res.status(401).send({error: "User not found...!"})
+        }
+
+    } catch (error){
+        return res.status(401).send({ error })
+    }
 } 
 
 
