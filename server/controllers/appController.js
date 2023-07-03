@@ -1,3 +1,5 @@
+import UserModel from "../model/User.model.js";
+
 /** POST request: hhtp://localhost:8080/api/register
  * @param : {
     "username" : "thallo",
