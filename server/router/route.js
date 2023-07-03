@@ -8,7 +8,7 @@ import * as controller from "../controllers/appController.js";
 router.route('/register').post(controller.register); //register user
 // router.route('/registerMail').post(); //To send the email
 router.route("/authenticate").post((req,res) => res.end()); //To authenticate users
-router.route("/login").post(controller.login); //login our app
+router.route("/login").post(controller.verifyUser, controller.login); //login our app
 
 // Get Methods
 router.route("/user/:username").get(controller.getUser); //user with username
