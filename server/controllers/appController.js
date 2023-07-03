@@ -1,4 +1,5 @@
 import UserModel from "../model/User.model.js";
+import bcrypt from "bcrypt";
 
 /** POST request: hhtp://localhost:8080/api/register
  * @param : {
@@ -13,7 +14,63 @@ import UserModel from "../model/User.model.js";
  */
 
 export async function register(req,res){
-    res.json("This is register route");
+    try{
+        // recieving data from the users
+        const { username, password, profile, email } = req.body;
+
+        // checking is user already exist
+        const existUsername = new Promise((resolve, reject) =>{
+            UserModel.findOne({ username }, function(error, user){
+                if(error) reject(new Error(error))
+                if(user) reject({error: "Please use unique username"});
+
+                // if it does not found this user in our database then return resolve
+                resolve();
+            });
+        });
+
+        // checking for existing email
+        const existEmail = new Promise((resolve, reject) =>{
+            UserModel.findOne({ email }, function(error, email){
+                if(error) reject(new Error(error))
+                if(email) reject({error: "Please use unique Email"});
+
+                resolve();
+            });
+        });
+
+        Promise.all([existUsername, existEmail])
+            .then(() =>{
+                // hashing password
+                if(password){
+                    bcrypt.hash(password, 10)
+                        // result is going to return promise
+                        .then( hashedPassword => {
+                            
+                            const user = new UserModel({
+                                username,
+                                password: hashedPassword,
+                                profile: profile || '',
+                                email
+                            });
+
+                            // return save results as a response
+                            user.save()
+                                .then(result => res.status(201).send({msg: "User Registration successful"}))
+                                .catch(error => res.status(500).send({error}))
+                        }).catch(error => {
+                            return res.status(500).send({
+                                error: "Enable password hashed"
+                            })
+                        })
+                }
+            }).catch(error => {
+                return res.status(500).send({ error })
+            })
+
+    }catch(error){
+        return res.status(500).send(error);
+    }
 }
 
 
