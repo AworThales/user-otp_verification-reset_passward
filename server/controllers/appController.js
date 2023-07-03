@@ -145,7 +145,23 @@ export async function login(req,res){
 
 /** POST request: hhtp://localhost:8080/api/user/thallo */
 export async function getUser(req,res){
-    res.json("This is getUser Route");
+    const { username } = req.params;
+
+    try{
+
+        if(!username) return res.status(501).send({ error: "Invalid Username"})
+
+        UserModel.findOne({ username }), function (err, user){
+            if(err) return res.status(500).send({ err })
+            if(!user) return res.status(500).send ({error: "Can't find User"})
+
+            // if user is found then send the user
+            return res.status(201).send(user)
+        }
+
+    } catch(error){
+        return res.status(404).send({error: "User not found"})
+    }
 }
 
 /**Put request: hhtp://localhost:8080/api/updteUser
