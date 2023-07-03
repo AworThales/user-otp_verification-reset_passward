@@ -4,6 +4,26 @@ import jwt from "jsonwebtoken";
 import ENV from "../config.js";
 
 
+// creating middleware for verifying ther users
+export async function verifyUser(req,res, next){
+    try{
+
+        // checking where data is comming from either POST or GET request
+        const { username } = req.method == "GET" ? req.query : req.body;
+
+        // checking if user exist
+        let existUser = await UserModel.findOne({ username });
+        if(!existUser) return res.status(404).send({ error: " User not found"})
+
+        // if the model fount ther username return next function
+        next();
+
+    } catch(error){
+        return res.status(404).send({error: "Authntication Error"});
+    }
+}
+
+
 /** POST request: hhtp://localhost:8080/api/register
  * @param : {
     "username" : "thallo",
