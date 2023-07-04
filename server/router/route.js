@@ -19,6 +19,6 @@ router.route("/createResetSession").get(controller.createResetSession); //Tp res
 
 // Put Methods
 router.route("/updateUser").put( Auth, controller.updateUser); // To update the user profile
-router.route("/resetPassword").put(controller.resetPassword); //To reset password
+router.route("/resetPassword").put(controller.verifyUser, controller.resetPassword); //To reset password
 
 export default router; 
