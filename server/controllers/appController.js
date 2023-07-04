@@ -2,6 +2,7 @@ import UserModel from "../model/User.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ENV from "../config.js";
+import otpGenerator from "otp-generator";
 
 
 // creating middleware for verifying ther users
@@ -207,12 +208,20 @@ export async function updateUser(req,res){
 
 /** GET Request: hhtp://localhost:8080/api/generateOTP */
 export async function generateOTP(req,res){
-    res.json("This is genereteOTP route");
+   req.app.locals.OTP = await otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false})
+   res.status(201).send({ code: req.app.locals.OTP})
 }
+
 
 // /**GET Request: hhtp://localhost:8080/api/verifyOTP */
 export async function verifyOTP(req,res){
-    res.json("This is verifyOTP Route");
+    const { code } = req.query;
+    if(parseInt(req.app.locals.OTP) === parseInt(code)){
+        req.app.locals.OTP = null; //reset OTP value or code
+        req.app.locals.resetSession = true; //start session for reset password
+        return res.status(201).send({ msg: "Verify Sucessfully!"})
+    }
+    return res.status(400).send({ error: "Invalid OTP"})
 }
 
 
