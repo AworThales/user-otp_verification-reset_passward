@@ -22,3 +22,23 @@ export async function getUser({ username }){
     }
 }
 
+/** Registering user */
+export async function registerUser(credentials){
+    try{
+       const { data : msg, status } = await axios.post(`/api/register/`, credentials);
+
+        // getting this vairables ffrom the credentials
+       let { username, email } = credentials;
+
+        /** sending email to user */
+        // checking if status in our backend api is 201, thats OK
+        if(status === 201 ){
+            await axios.post('/api/register/', { username, userEmail: email, text: msg })
+
+            return Promise.resolve(msg);
+        }
+        
+    } catch (error) {
+        return Promise.reject({ error });
+    }
+}
