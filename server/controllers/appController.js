@@ -228,7 +228,11 @@ export async function verifyOTP(req,res){
 // sucessfully redirect user when OTP is valid
 /** GET Request: hhtp://localhost:8080/api/createResetSession */
 export async function createResetSession(req,res){
-    res.json("This iscreateResetSession Route");
+    if(req.app.locals.resetSession){
+        req.app.locals.resetSession =false; //allowing acess to this route only once
+        return res.status(201).send({ error: "Access granted!"})
+    }
+    return res.status(440).send({ error: "Session expired!"})
 }
 
 
