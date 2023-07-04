@@ -2,7 +2,7 @@ import { Router } from "express";
 const router = Router();
 /** importinf all controllers */
 import * as controller from "../controllers/appController.js";
-import Auth from "../middleware/auth.js";
+import Auth, { localVariables } from "../middleware/auth.js";
 
 // Post Methods
 // router.route('/register').post((req,res) => res.json("register route")); //register user
@@ -13,8 +13,8 @@ router.route("/login").post(controller.verifyUser, controller.login); //login ou
 
 // Get Methods
 router.route("/user/:username").get(controller.getUser); //user with username
-router.route("/generateOTP").get(controller.generateOTP); //To generate random OTP
-router.route("verifyOTP").get(controller.verifyOTP); //To verify generated OTP
+router.route("/generateOTP").get(controller.verifyUser, localVariables, controller.generateOTP); //To generate random OTP
+router.route("/verifyOTP").get(controller.verifyOTP); //To verify generated OTP
 router.route("/createResetSession").get(controller.createResetSession); //Tp reset all the variables
 
 // Put Methods
