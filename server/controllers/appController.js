@@ -239,6 +239,39 @@ export async function createResetSession(req,res){
 // This will user password when we have a valid session
 /** PUT request: hhtp://localhost:8080/api/resetPassword */
 export async function resetPassword(req,res){
-    res.json("This is resetPassword route");
+    try{
+
+        if(!req.app.locals.resetSession) return res.status(440).send({ error: "Session expired!"})
+
+        const { username, password } = req.body;
+
+        try {
+
+            UserModel.findOne({ username })
+                .then(user => {
+                    bcrypt.hash(password, 10)
+                        .then(hashedPassword => {
+                            UserModel.updateOne(
+                                { username: user.username},
+                                { password: hashedPassword}, function(err, data){
+                                    if(err) throw err;
+                                    return res.status(201).send({ msg: "Record updated successfully...!"})
+                                }
+                            )
+                        })
+                        .catch(error =>{
+                            return res.status(500).send({ error: "Enable to hashed password"})
+                        })
+                })
+                .catch(error => {
+                    return res.status(404).send({ error : "Usernane not found!"})
+                })
+            
+        } catch (error) {
+            return res.status(500).send({ error })
+        }
+    } catch (error){
+        return res.status(401).send({ error })
+    }
 }
 
