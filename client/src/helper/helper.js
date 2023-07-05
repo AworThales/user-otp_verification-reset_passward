@@ -68,3 +68,41 @@ export async function updateUser(response){
         return Promise.reject({ error: "Couldn't update profile...!"}) 
     }
 }
+
+/** Generatinf OTP */
+export async function generateOTP(username){
+    try{
+        const { data: { code }, status } = await axios.get('/api/generateOTP', { params: { username }});
+
+        // sending mail with OTP but verying first that the status of generated OTP is OK
+        if(status === 201){
+           let { data: { email }} = await getUser({ username });
+           let text = `Your Password Recovery OTP is ${code}. Verify and recover your password.`
+           await axios.post('/api/registerMail/', { username, userEmail: email, text, subject: "Password Recovery OTP"})
+        }
+
+        return Promise.resolve(code);
+    } catch (error) {
+        return Promise.reject({ error });
+    }
+}
+
+/** Verifying OTP */
+export async function verifyOTP({ username, code }){
+    try{
+       const { data, status } = await axios.get('/api/verifyOTP', { params: { username, code }})
+       return {data, status };
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+/** Reseting password */
+export async function resetPassword({ username, password }) {
+    try{
+        const { data, status } = await axios.put('/api/resetPassword', { username, password});
+        return Promise.resolve({ data, status });
+    } catch ( error ) {
+        return Promise.resolve({ error });
+    }
+}
