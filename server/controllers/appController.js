@@ -170,7 +170,7 @@ export async function getUser(req,res){
 
 /**Put request: hhtp://localhost:8080/api/updteUser
  * @param : {
-    "id": "userid"
+    "header: "<token>"
     }
     body: {
         firstName: "",
@@ -194,7 +194,7 @@ export async function updateUser(req,res){
             UserModel.updateOne({ _id: userId }, body, function(err, data){
                 if(err) throw err;
 
-                return res.status(201).send({ msg: "Record Pudated Successfully...!"})
+                return res.status(201).send({ msg: "Record updated Successfully...!"})
             })
         }else{
             return res.status(401).send({error: "User not found...!"})
