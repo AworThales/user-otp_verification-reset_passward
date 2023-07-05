@@ -1,8 +1,19 @@
 import Toast from "react-hot-toast";
+import { authenticate } from './helper.js';
 
 // validating login page usernme
 export async function usernameValidate(values){
     const errors = usernameVerify({}, values);
+
+    if(values.username){
+        // checking user exist or not
+        const { status } = await authenticate(values.username);
+
+        if(status !== 200){
+            errors.exist = Toast.error("User doesn't exist...!")
+        }
+    }
+
     return errors;
 }
 
