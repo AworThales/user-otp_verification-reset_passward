@@ -1,5 +1,9 @@
 import axios from "axios";
 
+//server domain
+axios.defaults.baseURL = process.env.REACT_APP_SERVER_DOMAIN;
+
+
 // Mkaing API Request
 
 // authenticate function
