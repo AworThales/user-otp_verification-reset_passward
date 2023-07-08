@@ -1,36 +1,48 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import avatar from '../images/profile.png';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 import { useFormik } from 'formik';
 import { profileValidate } from '../helper/validate'
 import { registerValidate } from '../helper/validate'
 import { convertImageToBase64 } from '../helper/converter'
-// import { useAuthStore } from '../store/store'
-
+import { useAuthStore } from '../store/store'
+import { updateUser } from '../helper/helper';
 import styles from '../styles/Username.module.css';
 import extend from '../styles/Profile.module.css'
+import useFetch from '../hooks/fetch.hook.js';
 
 export default function Profile() {
 
-  const [file, setFile] = useState(); 
+  const [file, setFile] = useState();
+  // const {username} = useAuthStore(state => state.auth);
+  // const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`);
+  const [{ isLoading, apiData, serverError }] = useFetch();
 
+  
   // const navigate = useNavigate();
   // const setUsername = useAuthStore(state => state.setUsername);
 
   const formik = useFormik({
     initialValues : {
-      firstname: '',
-      lastname: '',
-      mobile: '',
-      email: '',
-      address : ''
+      firstName: apiData?.firstName || '',
+      lastName: apiData?.lastName || '',
+      mobile: apiData?.mobile || '',
+      email: apiData?.email || '',
+      address : apiData?.address || ''
     },
+    enableReinitialize: true,
     validate : profileValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit : async values => {
-      values = await Object.assign(values, {profle: file || ''})
+      values = await Object.assign(values, {profle: file || apiData?.profile || ''});
+      let updatePromise = updateUser(values);
+      toast.promise(updatePromise, {
+        loading: 'Updating...!',
+        success: <b>Update Succesfully...!</b>,
+        error: <b>Couldn't update!</b>
+      });
     }
   })
 
@@ -39,6 +51,10 @@ export default function Profile() {
     const base64 = await convertImageToBase64(e.target.files[0]);
     setFile(base64);
   }
+
+  if(isLoading) return <h1 className='text-2xl font-bold'>isLoading</h1>;
+  if(serverError) return <h1 className='text-xl text-red-500'>{serverError.message}</h1>;
+
 
   return (
     <div className="container py-1 mx-auto" >
@@ -58,7 +74,7 @@ export default function Profile() {
           <form className='py-1' onSubmit={formik.handleSubmit}>
               <div className='profile flex justify-center py-4'>
                   <label htmlFor='profile'>
-                    <img src={file || avatar} className={`${styles.profile_img} ${extend.profile_img}`} alt="avatar" />
+                    <img src={apiData?.profile || file || avatar} className={`${styles.profile_img} ${extend.profile_img}`} alt="avatar" />
                   </label>
                   <input type='file' id='profile' name='profile' onChange={onUpload} />
               </div>
@@ -77,7 +93,7 @@ export default function Profile() {
                 <div className='name flex w-3/4 gap-10'>
                   <input {...formik.getFieldProps('address')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Address*' />
                 </div>
-                  <button className={styles.btn} type='submit'>Register</button>
+                  <button className={styles.btn} type='submit'>Update</button>
               </div>
 
               <div className="text-center py-4">

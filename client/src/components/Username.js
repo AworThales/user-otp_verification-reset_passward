@@ -30,7 +30,7 @@ export default function Username() {
     onSubmit : async values => {
       // console.log(values)
       setUsername(values.username);
-      navigate('password');
+      navigate('/password');
     }
   })
 

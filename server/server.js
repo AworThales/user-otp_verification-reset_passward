@@ -28,7 +28,7 @@ connect().then(() =>{
     try {
         
         app.listen(port, () =>{
-        console.log(`Server connected to hhtp:localhost:${port}`);
+        console.log(`Server connected to hhtp://localhost:${port}`);
         })
     } catch (error) {
         console.log('Cannot connect to the server')

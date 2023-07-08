@@ -1,10 +1,20 @@
 import axios from "axios";
+import jwt_decode from 'jwt-decode';
 
 //server domain
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_DOMAIN;
 
 
 // Mkaing API Request
+
+/** To get username from token */
+export async function getUsername(){
+    const token = localStorage.getItem('token')
+    if(!token) return Promise.reject("Toekn not found!");
+    let decode = jwt_decode(token)
+    return decode;
+
+}
 
 // authenticate function
 export async function authenticate(username){
@@ -29,7 +39,7 @@ export async function getUser({ username }){
 /** Registering user */
 export async function registerUser(credentials){
     try{
-       const { data : msg, status } = await axios.post(`/api/register/`, credentials);
+       const { data : {msg}, status } = await axios.post(`/api/register`, credentials);
 
         // getting this vairables ffrom the credentials
        let { username, email } = credentials;
@@ -37,7 +47,7 @@ export async function registerUser(credentials){
         /** sending email to user */
         // checking if status in our backend api is 201, thats OK
         if(status === 201 ){
-            await axios.post('/api/register/', { username, userEmail: email, text: msg })
+            await axios.post('/api/register', { username, userEmail: email, text: msg })
 
             return Promise.resolve(msg);
         }
@@ -55,7 +65,7 @@ export async function verifyPassword({ username, password }){
             return Promise.resolve({ data });
         }
     } catch (error){
-        return Promise.reject({ error: "Password doesm't match...!"})
+        return Promise.reject({ error: "Password doesn't match...!"})
     }
 }
 
